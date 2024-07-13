@@ -20,13 +20,15 @@ class RecurrentNN(nn.Module):
         super(RecurrentNN, self).__init__()
         self.num_layers = num_layers
         self.hidden_size = hidden_size
-        self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
         
     def forward(self, input_states):
-        # Initial hidden state
+        # Initial hidden state and cell state
         h_0 = torch.zeros(self.num_layers, input_states.size(0), self.hidden_size)
-        out, _ = self.rnn(input_states, h_0)
+        c_0 = torch.zeros(self.num_layers, input_states.size(0), self.hidden_size)
+        
+        out, _ = self.lstm(input_states, (h_0, c_0))
         out = self.fc(out)
         return out
 
