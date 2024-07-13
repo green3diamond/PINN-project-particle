@@ -6,7 +6,7 @@ from src.dataset import get_dataloaders
 
 from tqdm.auto import tqdm
 
-def train_model(model, train_loader, criterion, optimizer, num_epochs=20):
+def train_model(model, train_loader, criterion, optimizer, num_epochs=100):
     model.train()
     progress_bar = tqdm(range(num_epochs), desc='Training Progress', leave=True)
     for epoch in progress_bar:
@@ -47,6 +47,6 @@ if __name__ == '__main__':
     model = FeedForwardNN()
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
-    train_loader, test_loader = get_dataloaders(64, "data_lorentz/train.txt", "data_lorentz/test.txt")
+    train_loader, test_loader = get_dataloaders(64, "data_lorentz/train.txt", "data_lorentz/test.txt", 1)
     train_model(model, train_loader, criterion, optimizer, num_epochs=100)
     evaluate_model(model, test_loader, criterion)
