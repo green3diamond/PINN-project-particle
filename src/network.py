@@ -16,14 +16,15 @@ class FeedForwardNN(nn.Module):
 
 
 class RecurrentNN(nn.Module):
-    def __init__(self, input_size=4, hidden_size=64, output_size=4, num_layers=1):
+    def __init__(self, input_size=4, hidden_size=64, output_size=4, num_layers=4):
         super(RecurrentNN, self).__init__()
+        self.num_layers = num_layers
         self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
         
     def forward(self, input_states):
         x = input_states.unsqueeze(1)  # Add sequence dimension
-        h_0 = torch.zeros(1, x.size(0), 64)  # Initial hidden state
+        h_0 = torch.zeros(self.num_layers, x.size(0), 64)  # Initial hidden state
         out, _ = self.rnn(x, h_0)
         out = self.fc(out[:, -1, :])
         return out

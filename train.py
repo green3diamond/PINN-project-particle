@@ -4,9 +4,12 @@ from src.network import FeedForwardNN
 from torch import optim
 from src.dataset import get_dataloaders
 
+from tqdm.auto import tqdm
+
 def train_model(model, train_loader, criterion, optimizer, num_epochs=20):
     model.train()
-    for epoch in range(num_epochs):
+    progress_bar = tqdm(range(num_epochs), desc='Training Progress', leave=True)
+    for epoch in progress_bar:
         running_loss = 0.0
         for input_states, output_states in train_loader:
             # Zero the parameter gradients
@@ -21,9 +24,10 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs=20):
             optimizer.step()
             
             running_loss += loss.item() * input_states.size(0)
-        
+
         epoch_loss = running_loss / len(train_loader.dataset)
-        print(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
+        progress_bar.set_description(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
+
 
 
 def evaluate_model(model, test_loader, criterion):
@@ -36,7 +40,7 @@ def evaluate_model(model, test_loader, criterion):
             total_loss += loss.item() * input_states.size(0)
     
     avg_loss = total_loss / len(test_loader.dataset)
-    print(f'Test Loss: {avg_loss:.4f}')
+    print(f'Test Loss: {avg_loss}')
 
 
 if __name__ == '__main__':
