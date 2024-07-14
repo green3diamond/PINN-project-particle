@@ -31,4 +31,4 @@ class RecurrentNN(nn.Module):
         out, _ = self.lstm(input_states, (h_0, c_0))
         out = self.fc(out)
         return out
-
+    
