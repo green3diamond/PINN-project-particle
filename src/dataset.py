@@ -64,3 +64,12 @@ def get_dataloaders_LSTM(batch_size, train_path, test_path, seq_length=16):
     
     return train_loader, test_loader
 
+
+def get_data_SimpNet(train_path, test_path, seq_length=16):
+    train_velocities, train_positions = load_data(train_path)
+    test_velocities, test_positions = load_data(test_path)
+    
+    train_input_sequences, train_output_sequences = create_pairs(train_velocities, train_positions, seq_length)
+    test_input_sequences, test_output_sequences = create_pairs(test_velocities, test_positions, seq_length)
+    
+    return train_input_sequences, train_output_sequences, test_input_sequences, test_output_sequences
