@@ -14,7 +14,7 @@ def plot_positions(positions, title):
     plt.grid(True)
     plt.show()
 
-def plot_predicted_trajectories(model, initial_state, true_positions, title, steps=300):
+def plot_predicted_trajectories(model, initial_state, true_positions, title, axisPlt, steps=300):
     model.eval()
     predicted_positions = []
     state = initial_state.unsqueeze(0)  # Add batch dimension
@@ -27,19 +27,17 @@ def plot_predicted_trajectories(model, initial_state, true_positions, title, ste
 
     predicted_positions = np.concatenate(predicted_positions, axis=0)
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(true_positions[:,0], true_positions[:, 1], label='True Trajectory', marker='o')
-    plt.plot(predicted_positions[:, 0], predicted_positions[:, 1], label='Predicted Trajectory', marker='x')
-    plt.title(title)
-    plt.xlabel('x position')
-    plt.ylabel('y position')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    axisPlt.plot(true_positions[:,0], true_positions[:, 1], label='True Trajectory', marker='o')
+    axisPlt.plot(predicted_positions[:, 0], predicted_positions[:, 1], label='Predicted Trajectory', marker='x')
+    axisPlt.set_title(title)
+    axisPlt.set_xlabel('x position')
+    axisPlt.set_ylabel('y position')
+    axisPlt.legend()
+    axisPlt.grid(True)
 
     return predicted_positions
 
-def plot_predicted_trajectories_LSTM(model, initial_state, true_positions, title, steps=300):
+def plot_predicted_trajectories_LSTM(model, initial_state, true_positions, title, axisPlt, steps=300):
     model.eval()
     predicted_positions = []
     state = initial_state.unsqueeze(0)  # Add batch dimension
@@ -52,15 +50,13 @@ def plot_predicted_trajectories_LSTM(model, initial_state, true_positions, title
 
     predicted_positions = np.concatenate(predicted_positions, axis=0)
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(true_positions[:,0], true_positions[:, 1], label='True Trajectory', marker='o')
-    plt.plot(predicted_positions[:, 0], predicted_positions[:, 1], label='Predicted Trajectory', marker='x')
-    plt.title(title)
-    plt.xlabel('x position')
-    plt.ylabel('y position')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    axisPlt.plot(true_positions[:,0], true_positions[:, 1], label='True Trajectory', marker='o')
+    axisPlt.plot(predicted_positions[:, 0], predicted_positions[:, 1], label='Predicted Trajectory', marker='x')
+    axisPlt.set_title(title)
+    axisPlt.set_xlabel('x position')
+    axisPlt.set_ylabel('y position')
+    axisPlt.legend()
+    axisPlt.grid(True)
 
     return predicted_positions
 
