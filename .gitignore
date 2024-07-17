@@ -5,3 +5,4 @@ outputs/
 outputs/**/*
 model/
 model/**/*
+.idea/workspace.xml
