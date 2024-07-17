@@ -109,7 +109,7 @@ def PD_plot(data, net):
     ax1.set_ylabel("y position")
     ax1.legend()
 
-    mse = torch.mean((flow_true - torch.tensor(flow_pred[1:]).to(device='cuda')) ** 2, axis=1)
+    mse = torch.mean((flow_true - torch.tensor(flow_pred[1:])) ** 2, axis=1)
 
     ax2.plot(mse.cpu(), marker='o')
     ax2.set_title('Mean Squared Error (MSE) Over Time')
