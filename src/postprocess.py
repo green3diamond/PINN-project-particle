@@ -3,7 +3,8 @@
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import learner as ln
+import learner_pnn as ln
+import torch
 
 def LV_plot(data, net):
     steps = 1500
@@ -48,43 +49,74 @@ def LV_plot(data, net):
     plt.savefig('LV.pdf')
     
 def PD_plot(data, net):
-    n = data.z0.shape[0] if len(data.z0.shape) == 2 else 1
-    z = [data.X_test[data.test_num * i] for i in range(n)]
+    # n = data.z0.shape[0] if len(data.z0.shape) == 2 else 1
+    # z = [data.X_test[data.test_num * i] for i in range(n)]
     
-    fig = plt.figure(figsize=[6.4 * 2, 4.8 * 1])
+    # fig = plt.figure(figsize=[6.4 * 2, 4.8 * 1])
     
-    ax1 = fig.add_subplot(1, 2, 1, projection='3d')
-    for i in range(n):
-        u = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 0]
-        v = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 1]
-        r = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 2]
-        ax1.plot(u, v, r, color='b')
-        pred = net.predict(z[i], steps=data.test_num, keepinitx=False, returnnp=True)
-        u = pred[:, 0]
-        v = pred[:, 1]
-        r = pred[:, 2]
-        ax1.plot(u, v, r, color='r')
-    ax1.set_xlabel('u')
-    ax1.set_ylabel('v')
-    ax1.set_zlabel('r')
+    # ax1 = fig.add_subplot(1, 2, 1, projection='3d')
+    # for i in range(n):
+    #     u = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 0]
+    #     v = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 1]
+    #     r = data.y_test_np[data.test_num * i: data.test_num * (i + 1), 2]
+    #     ax1.plot(u, v, r, color='b')
+    #     pred = net.predict(z[i], steps=data.test_num, keepinitx=False, returnnp=True)
+    #     u = pred[:, 0]
+    #     v = pred[:, 1]
+    #     r = pred[:, 2]
+    #     ax1.plot(u, v, r, color='r')
+    # ax1.set_xlabel('u')
+    # ax1.set_ylabel('v')
+    # ax1.set_zlabel('r')
     
-    ax2 = fig.add_subplot(1, 2, 2, projection='3d')
-    for i in range(n):
-        flow_true = net.inn.predict(data.y_test[data.test_num * i: data.test_num * (i + 1)], returnnp=True)
-        u = flow_true[:, 0]
-        v = flow_true[:, 1]
-        r = flow_true[:, 2]
-        ax2.plot(u, v, r, color='b')
-        pred = net.inn.predict(net.predict(z[i], steps=data.test_num, keepinitx=False), returnnp=True)
-        u = pred[:, 0]
-        v = pred[:, 1]
-        r = pred[:, 2]
-        ax2.plot(u, v, r, color='r')
-    ax2.set_xlabel('u')
-    ax2.set_ylabel('v')
-    ax2.set_zlabel('r')
+    # ax2 = fig.add_subplot(1, 2, 2, projection='3d')
+    # for i in range(n):
+    #     flow_true = net.inn.predict(data.y_test[data.test_num * i: data.test_num * (i + 1)], returnnp=True)
+    #     u = flow_true[:, 0]
+    #     v = flow_true[:, 1]
+    #     r = flow_true[:, 2]
+    #     ax2.plot(u, v, r, color='b')
+    #     pred = net.inn.predict(net.predict(z[i], steps=data.test_num, keepinitx=False), returnnp=True)
+    #     u = pred[:, 0]
+    #     v = pred[:, 1]
+    #     r = pred[:, 2]
+    #     ax2.plot(u, v, r, color='r')
+    # ax2.set_xlabel('u')
+    # ax2.set_ylabel('v')
+    # ax2.set_zlabel('r')
     
-    fig.savefig('PD.pdf')
+    # fig.savefig('PD.pdf')
+    steps = data.y_test.shape[0]
+    if isinstance(net, ln.nn.HNN):
+        flow_true = data.y_test
+        # data.solver.flow(data.X_test_np[0][:-1], data.h, steps)
+        flow_pred = net.predict(data.X_test[0, :-1], data.h, steps, keepinitx=True, returnnp=True)
+        # flow_pred = net.predict(data.X_test[0][:-1], data.h, steps, keepinitx=True, returnnp=True)
+    else:
+        flow_true = data.y_test
+        # data.solver.flow(data.X_test_np[0], data.h, steps)
+        flow_pred = net.predict(data.X_test[0], steps, keepinitx=True, returnnp=True)
+    
+    
+    # initialize figures for plotting
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 6))
+    
+    ax1.plot(flow_true[:, 2], flow_true[:, 3], marker='o', label='True trajectory', zorder=0)
+    ax1.plot(flow_pred[:, 2], flow_pred[:, 3], marker='x',  label='Predited trajectory', zorder=1)
+    # plt.scatter(data.X_train_np[:, 0], data.X_train_np[:, 1], color='b', label='Learned data', zorder=2)
+    ax1.grid(True)
+    ax1.set_xlabel("x position")
+    ax1.set_ylabel("y position")
+    ax1.legend()
+
+    mse = torch.mean((flow_true - torch.tensor(flow_pred[1:])) ** 2, axis=1)
+
+    ax2.plot(mse, marker='o')
+    ax2.set_title('Mean Squared Error (MSE) Over Time')
+    ax2.set_xlabel('Time step')
+    ax2.set_ylabel('MSE')
+    ax2.grid(True)
+    plt.show()
     
     
 def LF_plot(data, net):
