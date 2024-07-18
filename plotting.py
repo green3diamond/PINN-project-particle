@@ -67,10 +67,10 @@ def plot_predicted_trajectories_PINN(model, calcualteStep, initial_state, true_p
 
     with torch.no_grad():
         for _ in range(steps):
-            # mq = model(state)
+            mq = model(state)
             # print(mq)
 
-            dvdx = model.calculate_step(state)
+            dvdx = model.calculate_step_analytical(state)
             # dvdx = calcualteStep(state, mq[0,0],mq[0,1])
             predicted_state = state + dvdx[:, [0,1,3,4]]
 
