@@ -33,7 +33,7 @@ def get_dataloaders(batch_size, train_path, test_path):
     return train_loader, test_loader
 
 
-def create_time_pairs(velocities, positions, dt=1):
+def create_time_pairs(velocities, positions, dt=0.1):
     n_samples = len(velocities)
     times = np.arange(0, n_samples * dt, dt).reshape(-1, 1)
     input_sequences = times
