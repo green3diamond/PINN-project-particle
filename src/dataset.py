@@ -56,7 +56,7 @@ def get_PINN_dataloaders(batch_size, train_path, test_path):
     train_dataset = torch.utils.data.TensorDataset(train_input_sequences, train_output_sequences)
     test_dataset = torch.utils.data.TensorDataset(test_input_sequences, test_output_sequences)
     
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     return train_loader, test_loader
